@@ -2,6 +2,12 @@ name: Build and Deploy Pelican Blog
 
 # 1. TRIGGER: This workflow runs on any push to the 'main' branch
 on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name to greet'
+        required: true
+        default: 'World'
   push:
     branches:
       - main 
