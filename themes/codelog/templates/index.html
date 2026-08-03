@@ -4,6 +4,14 @@
 
 {% block body_class %}feed{% endblock %}
 
+{# Page 2+ must canonicalise to itself, not to page 1. Pointing every paginated
+   page at "/" tells Google the deeper pages are duplicates, and the posts only
+   reachable from them lose their discovery path. #}
+{% block canonical %}{% if articles_page and articles_page.number > 1 %}{{ SITEURL }}/{{ page_name }}{{ articles_page.number }}.html{% else %}{{ SITEURL }}/{% endif %}{% endblock %}
+{% block title %}{{ SITENAME|striptags }} — {{ SITEDESCRIPTION|default(SITESUBTITLE, true)|striptags }}{% if articles_page and articles_page.number > 1 %} (page {{ articles_page.number }}){% endif %}{% endblock %}
+{# Thin, near-duplicate listing pages: crawl them for links, do not index them. #}
+{% block meta_robots %}{% if articles_page and articles_page.number > 1 %}noindex, follow{% else %}index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1{% endif %}{% endblock %}
+
 {% block content %}
 <div class="shell">
 

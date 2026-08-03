@@ -295,6 +295,29 @@ def iter_sources():
             yield path, dest_dir
 
 
+def demote_body_h1(text):
+    """Turn body '# Heading' into '## Heading'.
+
+    The theme already renders the post title as the page's <h1>, so a body
+    heading at level 1 produced a second (and in one post, a third) <h1>. That
+    leaves a document with no single stated subject and a heading outline that
+    skips straight from title to title.
+
+    Only level 1 moves; deeper levels stay put, which is what makes the result
+    correct here -- the notebooks mix '# X' and '## Y' for headings that are
+    siblings, and demoting just the H1s lines them up. Fenced code blocks are
+    skipped so a Python comment is never mistaken for a heading.
+    """
+    lines = text.split('\n')
+    in_fence = False
+    for index, line in enumerate(lines):
+        if line.lstrip().startswith(('```', '~~~')):
+            in_fence = not in_fence
+        elif not in_fence and re.match(r'^# \S', line):
+            lines[index] = '#' + line
+    return '\n'.join(lines)
+
+
 def build(source_path, dest_dir, seen_slugs):
     print(f"-> Processing: {source_path}")
 
@@ -302,6 +325,7 @@ def build(source_path, dest_dir, seen_slugs):
     if result is None:
         return False
     metadata, body = result
+    body = demote_body_h1(body)
 
     required = REQUIRED_ARTICLE_METADATA if dest_dir == OUTPUT_DIR else REQUIRED_PAGE_METADATA
     absent = missing_metadata(metadata, required)

@@ -9,7 +9,14 @@ from pelicanconf import *
 
 # If your site is available via HTTPS, make sure SITEURL begins with https://
 SITEURL = "https://codelog.tomiarb.com"
-RELATIVE_URLS = True
+
+# Must be False for a published build. With relative URLs Pelican rewrites
+# SITEURL to "." inside templates, which turned every canonical tag into
+# <link rel="canonical" href="./classes.html"> -- a relative canonical is
+# resolved against the current URL, so it self-referenced whatever path the
+# crawler arrived on and gave Google no single authoritative URL. Open Graph
+# and JSON-LD have the same absolute-URL requirement.
+RELATIVE_URLS = False
 
 FEED_ALL_ATOM = "feeds/all.atom.xml"
 CATEGORY_FEED_ATOM = "feeds/{slug}.atom.xml"

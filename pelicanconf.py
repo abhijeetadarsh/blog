@@ -28,13 +28,22 @@ DISPLAY_CATEGORIES_ON_MENU = False
 MENUITEMS = ()
 
 # --- Plugins ---
-PLUGINS = ['seo']
+PLUGIN_PATHS = ['plugins']
+PLUGINS = ['seo', 'seo_files']
 
 # SEO
+# The report is a useful audit, so it stays on. The *enhancer* is off: it
+# injected a second <link rel="canonical"> on every page (conflicting with the
+# theme's), an og:locale of "C" taken from LOCALE, and og:title with no
+# og:description or og:image. The theme now emits all of that correctly, once.
 SEO_REPORT = True
-SEO_ENHANCER = True
-SEO_ENHANCER_OPEN_GRAPH = True
-SEO_ENHANCER_TWITTER_CARDS = True
+SEO_ENHANCER = False
+
+# Absolute URL of an image used for link previews when a post has no image of
+# its own. Must be absolute -- Facebook, X and LinkedIn do not resolve relative
+# paths. 1200x630 is the size every platform crops cleanly.
+OG_DEFAULT_IMAGE = 'images/og-default.png'
+OG_LOCALE = 'en_US'
 
 # --- Third party ---
 GOOGLE_ANALYTICS = 'G-L36LN32S0L'

@@ -5,12 +5,72 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="generator" content="Pelican" />
+  {# Resolve the four values every search engine and social scraper wants, once,
+     so the tags below cannot drift out of sync with each other. Child templates
+     override the blocks; self.foo() re-renders them here. #}
+  {# Defined empty so they emit nothing here; children fill them in, and the
+     `or` below supplies the site-wide default when a child does not. #}
+  {% block social_title %}{% endblock %}{% block og_image %}{% endblock %}
+
+  {% set meta_desc = self.meta_description()|striptags|trim %}
+  {% set meta_canonical = self.canonical()|trim %}
+  {% set meta_social_title = self.social_title()|striptags|trim
+                             or SITENAME|striptags %}
+  {% set meta_image = self.og_image()|trim
+                      or (SITEURL ~ '/' ~ OG_DEFAULT_IMAGE if OG_DEFAULT_IMAGE else '') %}
+
   <title>{% block title %}{{ SITENAME|striptags }}{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}{{ SITEDESCRIPTION|default(SITESUBTITLE, true)|striptags }}{% endblock %}" />
   {% if GOOGLE_SITE_VERIFICATION %}
   <meta name="google-site-verification" content="{{ GOOGLE_SITE_VERIFICATION }}" />
   {% endif %}
+
+  {# Exactly one canonical per page. Two conflicting tags make Google discard
+     both and guess, which is how duplicate listings start. #}
   <link rel="canonical" href="{% block canonical %}{{ SITEURL }}/{% endblock %}" />
+
+  {# Tells Google it may show a full-length text snippet, a large image preview
+     and a long video preview. Without it some previews get truncated. #}
+  <meta name="robots" content="{% block meta_robots %}index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1{% endblock %}" />
+
+  {# --- Open Graph: Facebook, LinkedIn, Slack, WhatsApp, Discord --- #}
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}" />
+  <meta property="og:site_name" content="{{ SITENAME|striptags }}" />
+  <meta property="og:title" content="{{ meta_social_title }}" />
+  <meta property="og:description" content="{{ meta_desc }}" />
+  <meta property="og:url" content="{{ meta_canonical }}" />
+  <meta property="og:locale" content="{{ OG_LOCALE|default('en_US', true) }}" />
+  {% if meta_image %}
+  <meta property="og:image" content="{{ meta_image }}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="{{ meta_social_title }}" />
+  {% endif %}
+  {% block og_extra %}{% endblock %}
+
+  {# --- Twitter/X cards --- #}
+  <meta name="twitter:card" content="{% if meta_image %}summary_large_image{% else %}summary{% endif %}" />
+  {% if TWITTER_USERNAME %}
+  <meta name="twitter:site" content="@{{ TWITTER_USERNAME }}" />
+  <meta name="twitter:creator" content="@{{ TWITTER_USERNAME }}" />
+  {% endif %}
+  <meta name="twitter:title" content="{{ meta_social_title }}" />
+  <meta name="twitter:description" content="{{ meta_desc }}" />
+  {% if meta_image %}<meta name="twitter:image" content="{{ meta_image }}" />{% endif %}
+
+  {# --- Structured data. Children override with Article/BreadcrumbList. --- #}
+  {% block structured_data %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ SITENAME|striptags|tojson }},
+    "url": {{ (SITEURL ~ '/')|tojson }},
+    "description": {{ (SITEDESCRIPTION|default(SITESUBTITLE, true)|striptags)|tojson }},
+    "author": {"@type": "Person", "name": {{ AUTHOR|tojson }}}
+  }
+  </script>
+  {% endblock %}
 
   {# Resolve theme and premium mode before first paint, so the page never
      flashes white and an ad-free reader never sees a slot appear. #}
