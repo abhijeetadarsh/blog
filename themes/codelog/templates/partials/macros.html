@@ -1,0 +1,58 @@
+{# Reusable pieces shared by the feed, article and index templates. #}
+
+{% macro reading_time(entry) -%}
+{%- set words = entry.content|striptags|wordcount -%}
+{{ [1, (words / 200)|round(0, 'ceil')|int]|max }} min read
+{%- endmacro %}
+
+{% macro initials(name) -%}
+{{ name|string|striptags|trim|first|upper }}
+{%- endmacro %}
+
+{# date · reading time · category, in that order. #}
+{% macro post_meta(entry, show_category=True) -%}
+<span class="meta">
+  <time datetime="{{ entry.date.isoformat() }}">{{ entry.locale_date }}</time>
+  <span class="meta__sep">·</span>{{ reading_time(entry) }}
+  {%- if entry.modified and entry.modified != entry.date %}
+  <span class="meta__sep">·</span>Updated {{ entry.locale_modified }}
+  {%- endif %}
+  {%- if show_category and entry.category %}
+  <span class="meta__sep">·</span><a href="{{ SITEURL }}/{{ entry.category.url }}">{{ entry.category }}</a>
+  {%- endif %}
+</span>
+{%- endmacro %}
+
+{% macro card(article, variant='') %}
+<article class="card {{ variant }}">
+  <a class="card__link" href="{{ SITEURL }}/{{ article.url }}">
+    {% if article.category %}<span class="eyebrow card__eyebrow">{{ article.category }}</span>{% endif %}
+    <h2 class="card__title">{{ article.title }}</h2>
+  </a>
+  {# Posts whose summary just repeats the title get no dek. #}
+  {% if article.summary and article.summary|striptags|trim != article.title|striptags|trim %}
+  <div class="card__summary">{{ article.summary }}</div>
+  {% endif %}
+  <div class="card__foot">
+    {{ post_meta(article, show_category=False) }}
+    {% if article.tags %}
+    <ul class="tags">
+      {% for tag in article.tags[:3] %}
+      <li><a class="tag" href="{{ SITEURL }}/{{ tag.url }}">{{ tag }}</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</article>
+{% endmacro %}
+
+{% macro compact_list(articles, limit=5) %}
+<ul class="module__list">
+  {% for article in articles[:limit] %}
+  <li>
+    <a href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a>
+    <div class="meta">{{ article.locale_date }}</div>
+  </li>
+  {% endfor %}
+</ul>
+{% endmacro %}

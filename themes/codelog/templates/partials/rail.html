@@ -1,0 +1,25 @@
+{# Right rail for list pages: sponsored unit, then contextual modules. #}
+{% import 'partials/macros.html' as m with context %}
+{% import 'partials/ads.html' as ads with context %}
+
+<div class="rail">
+  {{ ads.slot('sidebar', 'halfpage') }}
+
+  {% if dates %}
+  <section class="module">
+    <h3>Recent</h3>
+    {{ m.compact_list(dates, 5) }}
+  </section>
+  {% endif %}
+
+  {% if categories %}
+  <section class="module">
+    <h3>Categories</h3>
+    <div class="chip-grid">
+      {% for cat, cat_articles in categories[:8] %}
+      <a class="chip" href="{{ SITEURL }}/{{ cat.url }}">{{ cat }} <span>{{ cat_articles|count }}</span></a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>

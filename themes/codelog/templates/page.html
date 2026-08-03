@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% import 'partials/translations.html' as translations with context %}
+
+{% block html_lang %}{{ page.lang }}{% endblock %}
+{% block title %}{{ page.title|striptags }} · {{ SITENAME|striptags }}{% endblock %}
+{% block meta_description %}{{ page.summary|striptags|truncate(160)|trim }}{% endblock %}
+{% block canonical %}{{ SITEURL }}/{{ page.url }}{% endblock %}
+{% block body_class %}page{% endblock %}
+
+{% block extra_head %}
+{{ translations.entry_hreflang(page) }}
+{% endblock %}
+
+{% block content %}
+<div class="shell shell--narrow">
+  <header class="page-head">
+    <h1>{{ page.title }}</h1>
+    {% if page.summary and page.summary|striptags|trim != page.title|striptags|trim %}
+    <p class="lead">{{ page.summary|striptags|trim }}</p>
+    {% endif %}
+  </header>
+
+  <div class="prose" data-toc-source>
+    {{ page.content }}
+  </div>
+
+  <div class="section">{{ translations.translations_for(page) }}</div>
+</div>
+{% endblock %}

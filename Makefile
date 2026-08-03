@@ -8,11 +8,11 @@ PELICAN = pelican
 PIP = pip
 
 INSTALL_CMD = source $(VENV) && $(PIP) install -r requirements.txt
-CONVERT_CMD = source $(VENV) && $(PYTHON) convert_notebooks.py
+CONVERT_CMD = source $(VENV) && $(PYTHON) build_content.py
 PELICAN_CMD = source $(VENV) && $(PELICAN) content 
 PAGEFIND_CMD = source $(VENV) && $(PYTHON) build_search_index.py
 LISTEN_CMD = source $(VENV) && $(PELICAN) --listen -r
-CLEANUP_CMD = rm -rf output content/nbimages && rm -f content/*.md && rm -f *.log 
+CLEANUP_CMD = rm -rf output content/nbimages content/pages && rm -f content/*.md && rm -f *.log
 
 # The default target, runs all steps
 all: help
@@ -21,16 +21,16 @@ all: help
 help:
 	@echo "Available commands:"
 	@echo "  make help       - Show this help message."
-	@echo "  make convert    - Convert notebooks to Markdown."
+	@echo "  make convert    - Convert sources (notebooks/, posts/) to Markdown in content/."
 	@echo "  make content    - Generate content using Pelican."
 	@echo "  make index      - Generate the search index using custom Pagefind script (articles only)."
-	@echo "  make build      - Run Convert notebooks then Pelican content generation and Pagefind indexing."
+	@echo "  make build      - Run convert, then Pelican content generation and Pagefind indexing."
 	@echo "  make listen     - Start a local development server."
 	@echo "  make clean      - Clean up build artifacts."
 
-# Convert notebooks to Markdown
+# Convert all sources (notebooks, markdown) to Pelican markdown
 convert:
-	@echo "Converting notebooks to markdown..."
+	@echo "Converting sources to markdown..."
 	$(CONVERT_CMD)
 
 # Generate content using Pelican

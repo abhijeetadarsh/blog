@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Tags · {{ SITENAME|striptags }}{% endblock %}
+{% block meta_description %}Browse {{ SITENAME|striptags }} by tag.{% endblock %}
+{% block canonical %}{{ SITEURL }}/tags.html{% endblock %}
+
+{% block content %}
+<div class="shell shell--narrow">
+  <header class="page-head">
+    <span class="eyebrow">Browse</span>
+    <h1>Tags</h1>
+  </header>
+
+  <div class="chip-grid">
+    {% for tag, entries in tags|sort %}
+    <a class="chip" href="{{ SITEURL }}/{{ tag.url }}">{{ tag }} <span>{{ entries|count }}</span></a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

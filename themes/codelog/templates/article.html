@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% import 'partials/macros.html' as m with context %}
+{% import 'partials/ads.html' as ads with context %}
+{% import 'partials/translations.html' as translations with context %}
+
+{% block html_lang %}{{ article.lang }}{% endblock %}
+{% block title %}{{ article.title|striptags }} · {{ SITENAME|striptags }}{% endblock %}
+{% block meta_description %}{{ article.summary|striptags|truncate(160)|trim }}{% endblock %}
+{% block canonical %}{{ SITEURL }}/{{ article.url }}{% endblock %}
+{% block body_class %}article{% endblock %}
+{% block progress %}<div class="progress" role="presentation"></div>{% endblock %}
+
+{% block extra_head %}
+{{ translations.entry_hreflang(article) }}
+{% endblock %}
+
+{% block content %}
+{# Neighbours, derived from the site-wide article list (newest first). #}
+{% set nav = namespace(newer=None, older=None) %}
+{% for entry in articles %}
+  {% if entry.url == article.url %}
+    {% if not loop.first %}{% set nav.newer = articles[loop.index0 - 1] %}{% endif %}
+    {% if not loop.last %}{% set nav.older = articles[loop.index0 + 1] %}{% endif %}
+  {% endif %}
+{% endfor %}
+
+{# Related: shared tags first, then same category, capped at three. #}
+{% set rel = namespace(items=[], urls=[article.url]) %}
+{% for entry in articles %}
+  {% if entry.url not in rel.urls and rel.items|length < 3 and article.tags and entry.tags
+        and entry.tags|select('in', article.tags)|list|length > 0 %}
+    {% set rel.items = rel.items + [entry] %}
+    {% set rel.urls = rel.urls + [entry.url] %}
+  {% endif %}
+{% endfor %}
+{% for entry in articles %}
+  {% if entry.url not in rel.urls and rel.items|length < 3 and entry.category == article.category %}
+    {% set rel.items = rel.items + [entry] %}
+    {% set rel.urls = rel.urls + [entry.url] %}
+  {% endif %}
+{% endfor %}
+
+<div class="shell">
+  <div class="layout section">
+    <div class="layout__main">
+      <article>
+        <header class="article-head">
+          {% if article.category %}
+          <a class="eyebrow" href="{{ SITEURL }}/{{ article.category.url }}">{{ article.category }}</a>
+          {% endif %}
+          <h1>{{ article.title }}</h1>
+
+          {% if article.summary and article.summary|striptags|trim != article.title|striptags|trim %}
+          <p class="lead">{{ article.summary|striptags|trim }}</p>
+          {% endif %}
+
+          <div class="byline">
+            {% if article.author %}
+            <span class="avatar" aria-hidden="true">{{ m.initials(article.author) }}</span>
+            <span>
+              <a class="byline__who" href="{{ SITEURL }}/{{ article.author.url }}">{{ article.author }}</a>
+              <br />
+              {{ m.post_meta(article, show_category=False) }}
+            </span>
+            {% else %}
+            <span>{{ m.post_meta(article, show_category=False) }}</span>
+            {% endif %}
+
+            <span class="byline__actions">
+              <a class="icon-btn" rel="nofollow noopener" target="_blank" aria-label="Share on X"
+                 href="https://twitter.com/intent/tweet?url={{ SITEURL }}/{{ article.url|urlencode }}&text={{ article.title|striptags|urlencode }}{% if TWITTER_USERNAME %}&via={{ TWITTER_USERNAME }}{% endif %}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l16 16M20 4L4 20"/></svg>
+              </a>
+              <a class="icon-btn" rel="nofollow noopener" target="_blank" aria-label="Share on LinkedIn"
+                 href="https://www.linkedin.com/sharing/share-offsite/?url={{ SITEURL }}/{{ article.url|urlencode }}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 014 0v4"/></svg>
+              </a>
+              <button class="icon-btn" type="button" data-copy-link aria-label="Copy link">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 006 .5l2-2a4 4 0 00-6-6l-1 1"/><path d="M14 10a4 4 0 00-6-.5l-2 2a4 4 0 006 6l1-1"/></svg>
+              </button>
+            </span>
+          </div>
+        </header>
+
+        <div class="prose" data-toc-source>
+          {{ article.content }}
+        </div>
+
+        {# Moved next to a heading by main.js; stays here without scripting. #}
+        {{ ads.slot('in_article', 'in-article') }}
+
+        <footer class="stack section--tight">
+          {% if article.tags %}
+          <ul class="tags">
+            {% for tag in article.tags %}
+            <li><a class="tag" href="{{ SITEURL }}/{{ tag.url }}">{{ tag }}</a></li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {{ translations.translations_for(article) }}
+        </footer>
+      </article>
+
+      <div class="stack-lg section" data-pagefind-ignore>
+        {% if article.author %}
+        <div class="author-card">
+          <span class="avatar" aria-hidden="true">{{ m.initials(article.author) }}</span>
+          <div>
+            <h3>{{ article.author }}</h3>
+            <p>{{ AUTHOR_BIO|default('Writes here about the things worth writing down.', true) }}</p>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if nav.newer or nav.older %}
+        <nav class="postnav" aria-label="More posts">
+          {% if nav.older %}
+          <a class="postnav__item" href="{{ SITEURL }}/{{ nav.older.url }}">
+            <span class="eyebrow postnav__label">Previous</span>
+            <span class="postnav__title">{{ nav.older.title }}</span>
+          </a>
+          {% else %}<span></span>{% endif %}
+          {% if nav.newer %}
+          <a class="postnav__item postnav__item--next" href="{{ SITEURL }}/{{ nav.newer.url }}">
+            <span class="eyebrow postnav__label">Next</span>
+            <span class="postnav__title">{{ nav.newer.title }}</span>
+          </a>
+          {% else %}<span></span>{% endif %}
+        </nav>
+        {% endif %}
+
+        {% if rel.items %}
+        <section>
+          <div class="section-head"><h2>Related</h2></div>
+          <ol class="feed">
+            {% for entry in rel.items %}
+            <li>{{ m.card(entry, 'card--compact') }}</li>
+            {% endfor %}
+          </ol>
+        </section>
+        {% endif %}
+
+        {% if NEWSLETTER_ACTION %}
+        <section class="cta">
+          <h2>{{ NEWSLETTER_TITLE|default('Get new posts by email', true) }}</h2>
+          <p>{{ NEWSLETTER_BLURB|default('No noise, no schedule — just the next post when it is ready.', true) }}</p>
+          <form class="cta__form" action="{{ NEWSLETTER_ACTION }}" method="post" target="_blank">
+            <input type="email" name="email" placeholder="you@example.com" required aria-label="Email address" />
+            <button class="btn" type="submit">Subscribe</button>
+          </form>
+        </section>
+        {% endif %}
+
+        {% if DISQUS_SITENAME and article.status != "draft" %}
+        <section>
+          <div class="section-head"><h2>Comments</h2></div>
+          <div id="disqus_thread"></div>
+          <script>
+            var disqus_shortname = '{{ DISQUS_SITENAME }}';
+            var disqus_identifier = '{{ article.url }}';
+            var disqus_url = '{{ SITEURL }}/{{ article.url }}';
+            (function () {
+              var dsq = document.createElement('script');
+              dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = '//{{ DISQUS_SITENAME }}.disqus.com/embed.js';
+              (document.head || document.body).appendChild(dsq);
+            })();
+          </script>
+          <noscript>Enable JavaScript to view the comments.</noscript>
+        </section>
+        {% endif %}
+      </div>
+    </div>
+
+    <aside class="layout__aside" data-pagefind-ignore>
+      <div class="rail">
+        <section class="module">
+          <h3>On this page</h3>
+          <nav class="toc" id="toc" aria-label="Table of contents"></nav>
+        </section>
+
+        {{ ads.slot('sidebar', 'halfpage') }}
+
+        {% if rel.items %}
+        <section class="module">
+          <h3>Keep reading</h3>
+          {{ m.compact_list(rel.items, 3) }}
+        </section>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+
+{% block title %}{{ category }} · {{ SITENAME|striptags }}{% endblock %}
+{% block meta_description %}Posts filed under {{ category }} on {{ SITENAME|striptags }}.{% endblock %}
+{% block canonical %}{{ SITEURL }}/{{ category.url }}{% endblock %}
+
+{% block feed_head %}
+<header class="page-head">
+  <span class="eyebrow">Category</span>
+  <h1>{{ category }}</h1>
+  <p class="meta">{{ articles|count }} post{{ '' if articles|count == 1 else 's' }}</p>
+</header>
+{% endblock %}

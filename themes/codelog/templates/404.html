@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Not found · {{ SITENAME|striptags }}{% endblock %}
+{% block extra_head %}<meta name="robots" content="noindex, follow" />{% endblock %}
+
+{% block content %}
+<div class="shell shell--narrow error-page">
+  <span class="eyebrow">404</span>
+  <h1 class="display">This page moved on.</h1>
+  <p class="lead">The link is broken or the post was renamed.</p>
+  <p class="section">
+    <a class="btn" href="{{ SITEURL }}/">Back to the front page</a>
+    <button class="btn btn--ghost" type="button" data-search-open>Search instead</button>
+  </p>
+</div>
+{% endblock %}

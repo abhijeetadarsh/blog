@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ period | reverse | join(' ') }} · {{ SITENAME|striptags }}{% endblock %}
+
+{% block content %}
+<div class="shell shell--narrow">
+  <header class="page-head">
+    <span class="eyebrow">Archive</span>
+    <h1>{{ period | reverse | join(' ') }}</h1>
+    <p class="meta">{{ dates|count }} post{{ '' if dates|count == 1 else 's' }}</p>
+  </header>
+
+  <ol class="index-list">
+    {% for entry in dates %}
+    <li>
+      <a class="index-row" href="{{ SITEURL }}/{{ entry.url }}">
+        <span class="index-row__title">{{ entry.title }}</span>
+        <span class="index-row__meta">{{ entry.locale_date }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

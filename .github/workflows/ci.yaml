@@ -37,9 +37,9 @@ jobs:
       - name: Install dependencies 📦
         run: pip install -r requirements.txt
 
-      # 6. CONVERT NOTEBOOKS: Run your custom conversion script
-      - name: Convert notebooks to Markdown 📜
-        run: python convert_notebooks.py
+      # 6. CONVERT SOURCES: Run your custom conversion script
+      - name: Convert sources to Markdown 📜
+        run: python build_content.py
 
       # 7. BUILD SITE: Run Pelican to generate the static HTML site
       #    We use publishconf.py to ensure the correct SITEURL is used.

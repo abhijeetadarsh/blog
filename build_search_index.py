@@ -6,7 +6,7 @@ excluding category pages, tag pages, author pages, and the home page.
 
 import asyncio
 import logging
-import os
+import re
 from pathlib import Path
 from pagefind.index import PagefindIndex, IndexConfig
 
@@ -19,8 +19,10 @@ async def main():
     
     # Configuration for Pagefind
     config = IndexConfig(
-        root_selector="#content",  # Only index content within the content section
-        exclude_selectors=["nav", "header", "footer", "aside"],  # Exclude navigation and other non-content areas
+        root_selector="main",  # The theme wraps every page body in <main>
+        # Chrome, sponsored slots and end-of-post modules carry
+        # data-pagefind-ignore in the theme so they stay out of the index.
+        exclude_selectors=["nav", "aside", "[data-pagefind-ignore]"],
         force_language="en",
         verbose=True,
         logfile="pagefind_index.log",
@@ -37,15 +39,16 @@ async def main():
         # Filter to only include article pages (exclude category, tag, author, archive pages)
         article_files = []
         excluded_patterns = [
-            "index.html", "index2.html",  # Home pages
             "archives.html", "authors.html", "categories.html", "tags.html",  # Archive pages
+            "404.html",
         ]
         
         for html_file in html_files:
             filename = html_file.name
             
-            # Skip excluded files
-            if filename in excluded_patterns:
+            # Skip excluded files, plus every page of the paginated home feed
+            # (index.html, index2.html, index3.html …)
+            if filename in excluded_patterns or re.fullmatch(r"index\d*\.html", filename):
                 log.info(f"Excluding: {filename}")
                 continue
                 

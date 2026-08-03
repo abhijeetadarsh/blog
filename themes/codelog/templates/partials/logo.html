@@ -1,0 +1,31 @@
+{#
+  Brand mark: a terminal prompt (`>_`) in an accent tile. It reads as "code"
+  at 32px and still at favicon size, and every colour comes from a token so it
+  follows the light/dark theme without a second asset.
+
+  Usage:  {% import 'partials/logo.html' as logo with context %}
+          {{ logo.mark() }}
+#}
+
+{% macro mark(size=32) %}
+<svg class="logo-mark" width="{{ size }}" height="{{ size }}" viewBox="0 0 32 32"
+     aria-hidden="true" focusable="false">
+  <rect class="logo-mark__field" width="32" height="32" rx="8" />
+  <path class="logo-mark__glyph" d="M10 11 L15 16 L10 21" />
+  <path class="logo-mark__glyph" d="M17.5 21 H23" />
+</svg>
+{% endmacro %}
+
+{#
+  Mark + sitename, used in the masthead and the footer brand block. `as_link`
+  wraps it in an anchor home; the footer passes false since it is not a link.
+#}
+{% macro wordmark(as_link=true, subtitle=false) %}
+{% if as_link %}<a class="wordmark" href="{{ SITEURL }}/">{% else %}<span class="wordmark">{% endif %}
+  {{ mark() }}
+  <span class="wordmark__text">
+    <span class="wordmark__name">{{ SITENAME }}</span>
+    {% if subtitle and SITESUBTITLE %}<span class="wordmark__sub">{{ SITESUBTITLE }}</span>{% endif %}
+  </span>
+{% if as_link %}</a>{% else %}</span>{% endif %}
+{% endmacro %}

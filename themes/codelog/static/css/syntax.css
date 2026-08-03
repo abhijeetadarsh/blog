@@ -1,0 +1,243 @@
+/* ==========================================================================
+   Syntax highlighting — Pygments token classes.
+
+   Every token colour is a variable, declared once per theme below, so the
+   scheme stays editable in one block. Values are checked against the surface
+   the code actually sits on (--bg-surface), not against --bg: light tokens
+   clear 4.5:1 on #f8fafc, dark tokens clear 4.5:1 on #1b2336.
+
+   Hue carries the category; weight and italics reinforce it so the code is
+   still readable with colour vision deficiency or in print.
+   ========================================================================== */
+
+:root {
+  --syn-comment: #64748b;
+  --syn-keyword: #7c3aed;
+  --syn-string: #15803d;
+  --syn-number: #b45309;
+  --syn-function: #1d4ed8;
+  --syn-class: #0e7490;
+  --syn-builtin: #c2410c;
+  --syn-operator: #475569;
+  --syn-name: #0f172a;
+  --syn-error: #b91c1c;
+  --syn-diff-add-bg: #dcfce7;
+  --syn-diff-del-bg: #fee2e2;
+}
+
+:root[data-theme="dark"] {
+  --syn-comment: #7f8ea3;
+  --syn-keyword: #c4a3ff;
+  --syn-string: #86efac;
+  --syn-number: #fcd34d;
+  --syn-function: #7cc4ff;
+  --syn-class: #67e8f9;
+  --syn-builtin: #fdba74;
+  --syn-operator: #a1aec0;
+  --syn-name: #f8fafc;
+  --syn-error: #fca5a5;
+  --syn-diff-add-bg: #14321f;
+  --syn-diff-del-bg: #3b1618;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --syn-comment: #7f8ea3;
+    --syn-keyword: #c4a3ff;
+    --syn-string: #86efac;
+    --syn-number: #fcd34d;
+    --syn-function: #7cc4ff;
+    --syn-class: #67e8f9;
+    --syn-builtin: #fdba74;
+    --syn-operator: #a1aec0;
+    --syn-name: #f8fafc;
+    --syn-error: #fca5a5;
+    --syn-diff-add-bg: #14321f;
+    --syn-diff-del-bg: #3b1618;
+  }
+}
+
+.highlight,
+.highlight pre {
+  color: var(--syn-name);
+}
+
+/* Comments — quietest layer, italic so they read as prose. */
+.highlight .c,
+.highlight .ch,
+.highlight .cm,
+.highlight .c1,
+.highlight .cs {
+  color: var(--syn-comment);
+  font-style: italic;
+}
+
+/* Preprocessor comments stay upright — they are directives, not prose. */
+.highlight .cp,
+.highlight .cpf {
+  color: var(--syn-builtin);
+}
+
+/* Keywords carry control flow — coloured and bold. */
+.highlight .k,
+.highlight .kc,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr,
+.highlight .ow {
+  color: var(--syn-keyword);
+  font-weight: 600;
+}
+
+/* Types and builtins. */
+.highlight .kt,
+.highlight .nb,
+.highlight .bp {
+  color: var(--syn-builtin);
+}
+
+/* Definitions: functions and methods. */
+.highlight .nf,
+.highlight .fm {
+  color: var(--syn-function);
+  font-weight: 600;
+}
+
+/* Classes, namespaces, decorators, exceptions. */
+.highlight .nc,
+.highlight .nn,
+.highlight .ne {
+  color: var(--syn-class);
+  font-weight: 600;
+}
+
+.highlight .nd {
+  color: var(--syn-builtin);
+  font-weight: 600;
+}
+
+/* Strings. */
+.highlight .s,
+.highlight .sa,
+.highlight .sb,
+.highlight .sc,
+.highlight .dl,
+.highlight .sd,
+.highlight .s2,
+.highlight .sh,
+.highlight .s1,
+.highlight .ss {
+  color: var(--syn-string);
+}
+
+/* Escapes, interpolation and regex read against the string, not with it. */
+.highlight .se,
+.highlight .si,
+.highlight .sx,
+.highlight .sr {
+  color: var(--syn-builtin);
+}
+
+/* Numbers. */
+.highlight .m,
+.highlight .mb,
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .mo,
+.highlight .il {
+  color: var(--syn-number);
+}
+
+/* Constants and attributes. */
+.highlight .no,
+.highlight .na,
+.highlight .nl,
+.highlight .py {
+  color: var(--syn-number);
+}
+
+/* Variables and plain identifiers. */
+.highlight .n,
+.highlight .ni,
+.highlight .nx,
+.highlight .nv,
+.highlight .vc,
+.highlight .vg,
+.highlight .vi,
+.highlight .vm {
+  color: var(--syn-name);
+}
+
+/* Tags (HTML/XML) behave like keywords. */
+.highlight .nt {
+  color: var(--syn-keyword);
+}
+
+/* Operators and punctuation stay quiet so structure does not shout. */
+.highlight .o,
+.highlight .p {
+  color: var(--syn-operator);
+}
+
+/* Errors. */
+.highlight .err {
+  color: var(--syn-error);
+  border-bottom: 1px dotted var(--syn-error);
+}
+
+/* Generic / diff output. */
+.highlight .gd {
+  color: var(--syn-error);
+  background: var(--syn-diff-del-bg);
+  display: inline-block;
+  width: 100%;
+}
+
+.highlight .gi {
+  color: var(--syn-string);
+  background: var(--syn-diff-add-bg);
+  display: inline-block;
+  width: 100%;
+}
+
+.highlight .gh,
+.highlight .gu {
+  color: var(--syn-function);
+  font-weight: 700;
+}
+
+.highlight .gs {
+  font-weight: 700;
+}
+
+.highlight .ge {
+  font-style: italic;
+}
+
+.highlight .gr,
+.highlight .gt {
+  color: var(--syn-error);
+}
+
+/* Shell prompts — not selectable, so copied snippets stay runnable. */
+.highlight .gp {
+  color: var(--syn-comment);
+  user-select: none;
+}
+
+/* Line numbers, when codehilite emits them. */
+.highlight .lineno,
+.highlight .linenos {
+  color: var(--syn-comment);
+  user-select: none;
+  padding-right: var(--s4);
+}
+
+/* Highlighted lines (codehilite `hl_lines`). */
+.highlight .hll {
+  background: var(--accent-soft);
+  display: inline-block;
+  width: 100%;
+}

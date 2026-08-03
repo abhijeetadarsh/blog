@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Authors · {{ SITENAME|striptags }}{% endblock %}
+{% block canonical %}{{ SITEURL }}/authors.html{% endblock %}
+
+{% block content %}
+<div class="shell shell--narrow">
+  <header class="page-head">
+    <span class="eyebrow">Browse</span>
+    <h1>Authors</h1>
+  </header>
+
+  <ol class="index-list">
+    {% for author, entries in authors|sort %}
+    <li>
+      <a class="index-row" href="{{ SITEURL }}/{{ author.url }}">
+        <span class="index-row__title">{{ author }}</span>
+        <span class="index-row__meta">{{ entries|count }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% import 'partials/macros.html' as m with context %}
+
+{% block title %}Archive · {{ SITENAME|striptags }}{% endblock %}
+{% block meta_description %}Every post published on {{ SITENAME|striptags }}, newest first.{% endblock %}
+{% block canonical %}{{ SITEURL }}/archives.html{% endblock %}
+
+{% block content %}
+<div class="shell shell--narrow">
+  <header class="page-head">
+    <span class="eyebrow">Archive</span>
+    <h1>Everything, newest first</h1>
+    <p class="meta">{{ dates|count }} post{{ '' if dates|count == 1 else 's' }}</p>
+  </header>
+
+  {% for year, entries in dates|groupby('date.year')|reverse %}
+  <section class="year-group">
+    <div class="section-head"><h2>{{ year }}</h2><span class="meta">{{ entries|count }}</span></div>
+    <ol class="index-list">
+      {% for entry in entries %}
+      <li>
+        <a class="index-row" href="{{ SITEURL }}/{{ entry.url }}">
+          <span class="index-row__title">{{ entry.title }}</span>
+          <span class="index-row__meta">{{ entry.date.strftime('%b %d') }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

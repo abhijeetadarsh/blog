@@ -1,0 +1,46 @@
+{#
+  Sponsored inventory.
+
+  Every slot renders the same box whether or not an ad is configured, so
+  turning ads on never changes the layout. While AD_SLOTS has no id for a
+  slot the box holds a quote instead — the space stays useful and quiet.
+
+  Slot names in use: top, in_feed, in_article, sidebar, footer.
+  Variants (they set the reserved height): leaderboard, in-feed, in-article,
+  rectangle, halfpage, footer.
+
+  Usage:  {% import 'partials/ads.html' as ads with context %}
+          {{ ads.slot('sidebar', 'halfpage') }}
+#}
+
+{% macro slot(name, variant='rectangle') %}
+{% set slot_id = (AD_SLOTS or {}).get(name) %}
+{% set live = ADS_ENABLED and AD_CLIENT and slot_id %}
+<aside class="ad ad--{{ variant }}" data-ad-slot="{{ name }}" data-pagefind-ignore
+       aria-label="{{ 'Advertisement' if live else 'Aside' }}">
+  {% if live %}
+  <span class="ad__label">Advertisement</span>
+  <ins class="adsbygoogle"
+       data-ad-client="{{ AD_CLIENT }}"
+       data-ad-slot="{{ slot_id }}"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  {% elif AD_NOTES %}
+  {#
+    Pick a note from the page it sits on plus a per-slot offset: two slots on
+    one page can never land on the same quote, and different pages open on
+    different ones.
+  #}
+  {% set offsets = {'top': 0, 'in_feed': 3, 'in_article': 6, 'sidebar': 9, 'footer': 12} %}
+  {% set ident = (article.title if article is defined and article
+                  else page.title if page is defined and page
+                  else page_name|default(SITENAME, true)) | string | striptags %}
+  {% set note = AD_NOTES[(ident|length + offsets.get(name, 0)) % AD_NOTES|length] %}
+  <div class="ad__placeholder">
+    <span class="ad__mark" aria-hidden="true">&#8220;</span>
+    <p class="ad__quote">{{ note[0] }}</p>
+    {% if note[1] %}<p class="ad__attr">{{ note[1] }}</p>{% endif %}
+  </div>
+  {% endif %}
+</aside>
+{% endmacro %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Categories · {{ SITENAME|striptags }}{% endblock %}
+{% block meta_description %}Browse {{ SITENAME|striptags }} by category.{% endblock %}
+{% block canonical %}{{ SITEURL }}/categories.html{% endblock %}
+
+{% block content %}
+<div class="shell shell--narrow">
+  <header class="page-head">
+    <span class="eyebrow">Browse</span>
+    <h1>Categories</h1>
+  </header>
+
+  <ol class="index-list">
+    {% for category, entries in categories %}
+    <li>
+      <a class="index-row" href="{{ SITEURL }}/{{ category.url }}">
+        <span class="index-row__title">{{ category }}</span>
+        <span class="index-row__meta">{{ entries|count }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

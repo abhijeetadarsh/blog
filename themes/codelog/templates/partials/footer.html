@@ -1,0 +1,68 @@
+{% import 'partials/ads.html' as ads with context %}
+{% import 'partials/logo.html' as logo with context %}
+
+<footer class="footer">
+  <div class="shell">
+    {{ ads.slot('footer', 'footer') }}
+
+    <div class="footer__grid">
+      <div class="footer__brand">
+        {{ logo.wordmark(as_link=false) }}
+        <p class="footer__tagline">{{ SITEDESCRIPTION|default(SITESUBTITLE, true) }}</p>
+      </div>
+
+      {% if pages %}
+      <div>
+        <h3>Site</h3>
+        <ul>
+          {% for pg in pages %}
+          <li><a href="{{ SITEURL }}/{{ pg.url }}">{{ pg.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <div>
+        <h3>Browse</h3>
+        <ul>
+          <li><a href="{{ SITEURL }}/archives.html">Archive</a></li>
+          <li><a href="{{ SITEURL }}/categories.html">Categories</a></li>
+          <li><a href="{{ SITEURL }}/tags.html">Tags</a></li>
+          {% if FEED_ALL_ATOM %}
+          <li><a href="{{ FEED_DOMAIN }}/{{ FEED_ALL_ATOM_URL|default(FEED_ALL_ATOM, true) }}">RSS feed</a></li>
+          {% endif %}
+        </ul>
+      </div>
+
+      {% if SOCIAL %}
+      <div>
+        <h3>Elsewhere</h3>
+        <ul>
+          {% for name, link in SOCIAL %}
+          <li><a href="{{ link }}" rel="me noopener">{{ name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span id="year">2025</span> {{ SITENAME }}{% if AUTHOR %} · {{ AUTHOR }}{% endif %}</span>
+
+      {% if PREMIUM_TOGGLE %}
+      {#
+        Premium reading mode. The choice lives in localStorage and is applied
+        before first paint, so switching it on removes the slots outright
+        rather than leaving the reserved boxes behind.
+      #}
+      <button class="switch" type="button" role="switch" aria-checked="false"
+              data-premium-toggle>
+        <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+        <span class="switch__label">Premium · ad-free reading</span>
+      </button>
+      {% endif %}
+
+      <span>Built with <a href="https://getpelican.com/">Pelican</a></span>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+
+{% block title %}{{ tag }} · {{ SITENAME|striptags }}{% endblock %}
+{% block meta_description %}Posts tagged {{ tag }} on {{ SITENAME|striptags }}.{% endblock %}
+{% block canonical %}{{ SITEURL }}/{{ tag.url }}{% endblock %}
+
+{% block feed_head %}
+<header class="page-head">
+  <span class="eyebrow">Tag</span>
+  <h1>{{ tag }}</h1>
+  <p class="meta">{{ articles|count }} post{{ '' if articles|count == 1 else 's' }}</p>
+</header>
+{% endblock %}

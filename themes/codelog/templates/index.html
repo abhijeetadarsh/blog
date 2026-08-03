@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% import 'partials/macros.html' as m with context %}
+{% import 'partials/ads.html' as ads with context %}
+
+{% block body_class %}feed{% endblock %}
+
+{% block content %}
+<div class="shell">
+
+  {% block feed_head %}
+    {% if not articles_page or not articles_page.has_previous() %}
+    {#
+      The masthead already carries the logo and the sitename, so repeating it
+      here at display size was pure duplication. The description does the work
+      instead and stays the page's single h1.
+    #}
+    <div class="hero">
+      <span class="eyebrow hero__kicker">Writing</span>
+      <h1 class="hero__title">{{ SITEDESCRIPTION|default(SITESUBTITLE, true) }}</h1>
+    </div>
+    {% endif %}
+  {% endblock %}
+
+  {{ ads.slot('top', 'leaderboard') }}
+
+  <div class="layout section">
+    <div class="layout__main">
+      {% if articles %}
+      <ol class="feed">
+        {% for article in articles_page.object_list %}
+        <li>
+          {{ m.card(article, 'card--featured' if loop.first and not articles_page.has_previous() else '') }}
+        </li>
+        {# One in-feed unit per page, deep enough to sit below the fold. #}
+        {% if loop.index == 3 and loop.length > 3 %}
+        <li>{{ ads.slot('in_feed', 'in-feed') }}</li>
+        {% endif %}
+        {% endfor %}
+      </ol>
+
+      {% include 'partials/pagination.html' %}
+      {% else %}
+      <p class="lead">No posts yet.</p>
+      {% endif %}
+    </div>
+
+    <aside class="layout__aside" data-pagefind-ignore>
+      {% include 'partials/rail.html' %}
+    </aside>
+  </div>
+</div>
+{% endblock %}
